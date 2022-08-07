@@ -7,6 +7,7 @@ public class DungeonGen : MonoBehaviour
 
     public Texture[] textures;
     public GameObject cube;
+    public Gameplay CAM;
 
     public struct Tile {
         public int type;
@@ -35,6 +36,10 @@ public class DungeonGen : MonoBehaviour
         SIZE = 32;
         grid = new Tile[SIZE,SIZE];
         build = true;
+        // Generate a new dungeon
+        generateDungeon();
+        // Build the new dungeon
+        buildDungeon();
 
     }
 
@@ -55,6 +60,8 @@ public class DungeonGen : MonoBehaviour
             // Build the new dungeon
             buildDungeon();
             
+            Debug.Log("built");
+
             build = false;
         }
     }
@@ -68,16 +75,22 @@ public class DungeonGen : MonoBehaviour
         //points = shufflePoints(points);
         // Carve paths
         carvePaths(points);
+        carveRooms(points);
         // Create rivers if needed
         // Fortify border
+        fortify();
+
+        // Set player starting point
+        Coor p = points[0];
+        CAM.updatePosition(p.z,p.x);
     }
 
     Coor[] generatePoints() {
         pMax = SIZE/3 + Random.Range(-1,2);
         Coor[] new_points = new Coor[pMax];
         for (int i=0; i<pMax; i++) {
-            int new_z = Random.Range(1,SIZE);
-            int new_x = Random.Range(1,SIZE);
+            int new_z = Random.Range(1,SIZE-1);
+            int new_x = Random.Range(1,SIZE-1);
             new_points[i].z = new_z;
             new_points[i].x = new_x;
         }
@@ -112,12 +125,6 @@ public class DungeonGen : MonoBehaviour
         return new_points;
     }
 
-    void place(int Z, int X, int T) {
-        if (grid[Z,X].type != 0) {
-            grid[Z,X].type = T;
-        }
-    }
-
     void carvePaths(Coor[] points) {
         for (int i=0; i<pMax-1; i++) {
             Coor C1 = points[i];
@@ -142,6 +149,46 @@ public class DungeonGen : MonoBehaviour
             }
 
         }
+    }
+
+    void carveRooms(Coor[] points) {
+        // Get needed data
+        Coor rift = points[pMax-1];
+        int chest_num = pMax/2 + 1;
+        bool chest = false;
+        // Create points
+        for (int i=1; i<pMax-1; i++) {
+            int cz = points[i].z;
+            int cx = points[i].x;
+            placeRoom(cz,cx);
+            if (chest) {
+                int tz = cz + Random.Range(-1,2);
+                int tx = cx + Random.Range(-1,2);
+                place(tz,tx,0,1);
+                chest = false;
+            } else {
+                chest = true;
+            }
+        }
+    }
+
+    void place(int Z, int X, int T, int V = 0) {
+        if (grid[Z,X].type != 0) {
+            grid[Z,X].type = T;
+            grid[Z,X].var = V;
+        }
+    }
+
+    void placeRoom(int Z, int X, int V = 0) {
+        place(Z-1,X-1,0,V);
+        place(Z-1,X,0,V);
+        place(Z-1,X+1,0,V);
+        place(Z,X-1,0,V);
+        place(Z,X,0,V);
+        place(Z,X+1,0,V);
+        place(Z+1,X-1,0,V);
+        place(Z+1,X,0,V);
+        place(Z+1,X+1,0,V);
     }
 
     void buildDungeon() {
@@ -177,6 +224,19 @@ public class DungeonGen : MonoBehaviour
                 grid[z,x].type = 1;
                 grid[z,x].var = 0;
             }
+        }
+    }
+
+    void fortify() {
+        for (int i=0; i<SIZE; i++) {
+            grid[i,0].type = 1;
+            grid[i,0].var = 0;
+            grid[i,SIZE-1].type = 1;
+            grid[i,SIZE-1].var = 0;
+            grid[SIZE-1,0].type = 1;
+            grid[SIZE-1,0].var = 0;
+            grid[SIZE-1,i].type = 1;
+            grid[SIZE-1,i].var = 0;
         }
     }
 
