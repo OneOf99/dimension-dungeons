@@ -13,6 +13,13 @@ public class DungeonGen : MonoBehaviour
         public GameObject obj;
     }
 
+    public struct Coor  {
+        public int z;
+        public int x;
+    }
+
+    public Coor[] points;
+    public int pMax;
     public bool build;
     public int SIZE;
     public Tile[,] grid;
@@ -20,7 +27,7 @@ public class DungeonGen : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SIZE = 20;
+        SIZE = 32;
         grid = new Tile[SIZE,SIZE];
         build = true;
 
@@ -39,14 +46,69 @@ public class DungeonGen : MonoBehaviour
             // Delete the previous dungeon
             deleteDungeon();
             // Generate a new dungeon
-            //
-            //     -- TODO --
-            //
+            generateDungeon();
             // Build the new dungeon
             buildDungeon();
             
             build = false;
         }
+    }
+
+    //
+    // Skeleton for dungeon generation
+    void generateDungeon() {
+        // Generate points
+        points = generatePoints();
+        // Randomize points
+        //points = shufflePoints(points);
+        // Carve paths
+        carvePaths(points);
+        // Create rivers if needed
+        // Fortify border
+    }
+
+    Coor[] generatePoints() {
+        pMax = SIZE/3 + Random.Range(-1,2);
+        Coor[] new_points = new Coor[pMax];
+        for (int i=0; i<pMax; i++) {
+            int new_z = Random.Range(1,SIZE);
+            int new_x = Random.Range(1,SIZE);
+            new_points[i].z = new_z;
+            new_points[i].x = new_x;
+        }
+        return new_points;
+    }
+    
+    // Who knows if this works, not me lol
+    Coor[] shufflePoints(Coor[] new_points) {
+        int[] order = new int[pMax];
+        for (int i=0; i<pMax; i++) {
+            order[i] = Random.Range(-1000,1000);
+        }
+        bool sorted = false;
+        while(!sorted) {
+            sorted = true;
+            for (int i=0; i<pMax-1; i++) {
+                for (int j=i+1; j<pMax; j++) {
+                    if (order[i] > order[j]) {
+                        // swap
+                        int tmp_int = order[i];
+                        Coor tmp_coor = new_points[i];
+                        order[i] = order[j];
+                        new_points[i] = new_points[j];
+                        order[j] = tmp_int;
+                        new_points[j] = tmp_coor;
+                        sorted = false;
+                    }
+                }
+            }
+        }
+
+        return new_points;
+    }
+
+    void carvePaths(Coor[] points) {
+        
     }
 
     void buildDungeon() {
