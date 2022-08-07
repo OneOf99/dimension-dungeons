@@ -352,6 +352,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6198c00fb8b94994da1431aa8529fb95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  textures:
+  - {fileID: 2800000, guid: c3df206797ac72e42a7878a3741e0409, type: 3}
+  - {fileID: 2800000, guid: be3e369916a176841b64e66dbc6ef005, type: 3}
+  - {fileID: 2800000, guid: c9a9a7a0ad1cb7d489b207834366d6de, type: 3}
+  cube: {fileID: 2810476542534151469, guid: 5d5a63c6235e9454eaffcd3bdc5a1340, type: 3}
+  build: 0
+  SIZE: 0
 --- !u!4 &1556256763
 Transform:
   m_ObjectHideFlags: 0
