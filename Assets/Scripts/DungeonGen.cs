@@ -11,11 +11,16 @@ public class DungeonGen : MonoBehaviour
     public struct Tile {
         public int type;
         public GameObject obj;
+        public int var;
     }
 
     public struct Coor  {
         public int z;
         public int x;
+        public Coor(int z, int x) {
+            this.z = z;
+            this.x = x;
+        }
     }
 
     public Coor[] points;
@@ -107,15 +112,43 @@ public class DungeonGen : MonoBehaviour
         return new_points;
     }
 
+    void place(int Z, int X, int T) {
+        if (grid[Z,X].type != 0) {
+            grid[Z,X].type = T;
+        }
+    }
+
     void carvePaths(Coor[] points) {
-        
+        for (int i=0; i<pMax-1; i++) {
+            Coor C1 = points[i];
+            Coor C2 = points[i+1];
+            int sz = C1.z;
+            int sx = C1.x;
+            int fz = C2.z;
+            int fx = C2.x;
+            int zd = sign(fz-sz);
+            int xd = sign(fx-sx);
+            int cz = sz;
+            int cx = sx;
+            // Carve out path with some randomness, should refine later
+            place(cz,cx, 0);
+            while (cz != fz || cx != fx) {
+                if (cx == fx || (Random.Range(0,2) == 0 &&  cz != fz)) {
+                    cz += zd;
+                } else {
+                    cx += xd;
+                }
+                place(cz,cx,0);
+            }
+
+        }
     }
 
     void buildDungeon() {
         // Build the dungeon
         for (int z=0; z<SIZE; z++) {
             for (int x=0; x<SIZE; x++) {
-                grid[z,x].type = Random.Range(0,2);
+                //grid[z,x].type = Random.Range(0,2);
                 
                 Texture temp_texture = textures[0];
                 int height = 0;
@@ -141,7 +174,17 @@ public class DungeonGen : MonoBehaviour
         for (int z=0; z<SIZE; z++) {
             for (int x=0; x<SIZE; x++) {
                 Destroy(grid[z,x].obj);
+                grid[z,x].type = 1;
+                grid[z,x].var = 0;
             }
+        }
+    }
+
+    int sign(int x) {
+        if (x == 0) {
+            return 0;
+        } else {
+            return (int) Mathf.Sign((float) x);
         }
     }
 }
