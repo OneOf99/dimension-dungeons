@@ -79,6 +79,7 @@ public class DungeonGen : MonoBehaviour
         // Create rivers if needed
         // Fortify border
         fortify();
+        carveRiverHorz();
 
         // Set player starting point
         Coor p = points[0];
@@ -123,6 +124,25 @@ public class DungeonGen : MonoBehaviour
         }
 
         return new_points;
+    }
+
+    void place(int Z, int X, int T, int V = 0) {
+        if (grid[Z,X].type == 0 || grid[Z,X].type == 1) {
+            grid[Z,X].type = T;
+            grid[Z,X].var = V;
+        }
+    }
+
+    void placeRoom(int Z, int X, int V = 0) {
+        place(Z-1,X-1,0,V);
+        place(Z-1,X,0,V);
+        place(Z-1,X+1,0,V);
+        place(Z,X-1,0,V);
+        place(Z,X,0,V);
+        place(Z,X+1,0,V);
+        place(Z+1,X-1,0,V);
+        place(Z+1,X,0,V);
+        place(Z+1,X+1,0,V);
     }
 
     void carvePaths(Coor[] points) {
@@ -172,23 +192,39 @@ public class DungeonGen : MonoBehaviour
         }
     }
 
-    void place(int Z, int X, int T, int V = 0) {
-        if (grid[Z,X].type != 0) {
-            grid[Z,X].type = T;
-            grid[Z,X].var = V;
+    void carveRiverHorz() {
+        int z = Random.Range((int)(SIZE/4f),(int)(3*SIZE/4f));
+        int fz = SIZE-z;
+        int x = 0;
+        int fx = SIZE-1;
+        int dist = (int)Mathf.Abs((float) fz-z);
+        int c = 0;
+        place(z-1,x,1,1);
+        place(z,x,1,1);
+        place(z+1,x,1,1);
+        while (x < fx) {
+            x++;
+            c++;
+            if (dist != 0 && c == dist) {
+                c = 0;
+                z += sign(fz-z);
+            }
+            if (grid[z,x].type == 0) {
+                place(z,x,0,1);
+            } else {
+                place(z,x,1,1);
+            }
+            if (grid[z-1,x].type == 0) {
+                place(z-1,x,0,1);
+            } else {
+                place(z-1,x,1,1);
+            }
+            if (grid[z+1,x].type == 0) {
+                place(z+1,x,0,1);
+            } else {
+                place(z+1,x,1,1);
+            }
         }
-    }
-
-    void placeRoom(int Z, int X, int V = 0) {
-        place(Z-1,X-1,0,V);
-        place(Z-1,X,0,V);
-        place(Z-1,X+1,0,V);
-        place(Z,X-1,0,V);
-        place(Z,X,0,V);
-        place(Z,X+1,0,V);
-        place(Z+1,X-1,0,V);
-        place(Z+1,X,0,V);
-        place(Z+1,X+1,0,V);
     }
 
     void buildDungeon() {
@@ -201,15 +237,21 @@ public class DungeonGen : MonoBehaviour
                 int height = 0;
                 switch (grid[z,x].type) {
                     case 0:
-                        temp_texture = textures[2];
+                        switch(grid[z,x].var) {
+                            case 0: temp_texture = textures[0]; break;
+                            case 1: temp_texture = textures[2]; break;
+                        }
                         height = -1;
                         break;
                     case 1:
-                        temp_texture = textures[1];
-                        height = 0;
+                        switch(grid[z,x].var) {
+                            case 0: temp_texture = textures[1]; height = 0; break;
+                            case 1: temp_texture = textures[3]; height = -1; break;
+                        }
                         break;
                 }
                 GameObject new_obj = Instantiate(cube,new Vector3(x,height,z), Quaternion.Euler(0,0,0));
+                new_obj.GetComponent<CubeLogic>().CAM = CAM;
                 Renderer rend = new_obj.GetComponent<MeshRenderer> ();
                 rend.material.SetTexture("_MainTex",temp_texture);
                 grid[z,x].obj = new_obj;

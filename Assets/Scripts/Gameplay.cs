@@ -27,7 +27,7 @@ public class Gameplay : MonoBehaviour
 	
     void Awake () {
         QualitySettings.vSyncCount = 0;  // VSync must be disabled
-        Application.targetFrameRate = 120;
+        //Application.targetFrameRate = 120;
     }
 
     // Start is called before the first frame update

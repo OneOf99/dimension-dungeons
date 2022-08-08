@@ -356,7 +356,10 @@ MonoBehaviour:
   - {fileID: 2800000, guid: c3df206797ac72e42a7878a3741e0409, type: 3}
   - {fileID: 2800000, guid: be3e369916a176841b64e66dbc6ef005, type: 3}
   - {fileID: 2800000, guid: c9a9a7a0ad1cb7d489b207834366d6de, type: 3}
+  - {fileID: 2800000, guid: 5545c7ca51f3b8244be029956b032d17, type: 3}
   cube: {fileID: 2810476542534151469, guid: 5d5a63c6235e9454eaffcd3bdc5a1340, type: 3}
+  CAM: {fileID: 963194229}
+  pMax: 0
   build: 0
   SIZE: 0
 --- !u!4 &1556256763
