@@ -5,6 +5,7 @@ using UnityEngine;
 public class Gameplay : MonoBehaviour
 {
 	public GameObject cube;
+	public DungeonGen d_script;
 	public Vector3 VEC;
 	public Quaternion QUAT;
 	
@@ -18,6 +19,7 @@ public class Gameplay : MonoBehaviour
 	
 	// Movement vars
 	private bool moving;
+	private bool will_move;
 	private bool waiting;
 	private int move_type;
 	public int dir;
@@ -27,15 +29,15 @@ public class Gameplay : MonoBehaviour
 	
     void Awake () {
         QualitySettings.vSyncCount = 0;  // VSync must be disabled
-        //Application.targetFrameRate = 120;
+        Application.targetFrameRate = 240;
     }
 
     // Start is called before the first frame update
     void Start()
     {
 		// SET MOVEMENT FRAME LENGTH
-		F_MAX = 30;
-		F_WAIT = 10;
+		F_MAX = 45;
+		F_WAIT = 15;
 		
         VEC = transform.position;
 		move_type = 0;
@@ -62,10 +64,10 @@ public class Gameplay : MonoBehaviour
 			if (!moving) {
 				dir_mod = dir;
 				if (Input.GetKey(KeyCode.W)){
-					moving = true;
+					will_move = true;
 					move_type = 1;
 				} else if (Input.GetKey(KeyCode.S)) {
-					moving = true;
+					will_move = true;
 					move_type = 1;
 					dir_mod = (dir + 2) % 4;
 				} else if (Input.GetKey(KeyCode.Q)) {
@@ -75,15 +77,29 @@ public class Gameplay : MonoBehaviour
 					moving = true;
 					move_type = 2;
 				} else if (Input.GetKey(KeyCode.A)) {
-					moving = true;
+					will_move = true;
 					move_type = 1;
 					dir_mod = (dir + 3) % 4;
 				} else if (Input.GetKey(KeyCode.D)) {
-					moving = true;
+					will_move = true;
 					move_type = 1;
 					dir_mod = (dir + 1) % 4;
 				} else if (Input.GetKeyDown(KeyCode.Space)) {
 					//Instantiate(cube,new Vector3(Mathf.Round(VEC.x),Mathf.Round(VEC.y-1),Mathf.Round(VEC.z)), Quaternion.Euler(0,0,0));
+				}
+				if (will_move) {
+					if (dir_mod == 0 && d_script.getType(Z+1,X) == 1) {
+						moving = false;
+					} else if (dir_mod == 1 && d_script.getType(Z,X+1) == 1) {
+						moving = false;
+					} else if (dir_mod == 2 && d_script.getType(Z-1,X) == 1) {
+						moving = false;
+					} else if (dir_mod == 3 && d_script.getType(Z,X-1) == 1) {
+						moving = false;
+					} else {
+						moving = true;
+					}
+					will_move = false;
 				}
 			}
 			

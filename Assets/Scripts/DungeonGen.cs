@@ -234,19 +234,19 @@ public class DungeonGen : MonoBehaviour
                 //grid[z,x].type = Random.Range(0,2);
                 
                 Texture temp_texture = textures[0];
-                int height = 0;
+                float height = 0f;
                 switch (grid[z,x].type) {
                     case 0:
                         switch(grid[z,x].var) {
                             case 0: temp_texture = textures[0]; break;
                             case 1: temp_texture = textures[2]; break;
                         }
-                        height = -1;
+                        height = -1f;
                         break;
                     case 1:
                         switch(grid[z,x].var) {
-                            case 0: temp_texture = textures[1]; height = 0; break;
-                            case 1: temp_texture = textures[3]; height = -1; break;
+                            case 0: temp_texture = textures[1]; height = Random.Range(-0.45f,-0.1f); break;
+                            case 1: temp_texture = textures[3]; height = -1.05f; break;
                         }
                         break;
                 }
@@ -288,5 +288,9 @@ public class DungeonGen : MonoBehaviour
         } else {
             return (int) Mathf.Sign((float) x);
         }
+    }
+
+    public int getType(int Z, int X) {
+        return grid[Z,X].type;
     }
 }
