@@ -233,8 +233,8 @@ public class DungeonGen : MonoBehaviour
             grid[i,0].var = 0;
             grid[i,SIZE-1].type = 1;
             grid[i,SIZE-1].var = 0;
-            grid[SIZE-1,0].type = 1;
-            grid[SIZE-1,0].var = 0;
+            grid[0,i].type = 1;
+            grid[0,i].var = 0;
             grid[SIZE-1,i].type = 1;
             grid[SIZE-1,i].var = 0;
         }
