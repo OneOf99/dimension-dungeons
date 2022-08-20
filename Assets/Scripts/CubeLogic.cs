@@ -32,10 +32,10 @@ public class CubeLogic : MonoBehaviour
         // Check if should be rendered?
         x_dist = (int)Mathf.Abs((float)CAM.X - X);
         z_dist = (int)Mathf.Abs((float)CAM.Z - Z);
-        if ((x_dist > 9 || z_dist > 9) && showing) {
+        if ((x_dist > 10 || z_dist > 10) && showing) {
             rend.enabled = false;
             showing = false;
-        } else if (x_dist <= 9 && z_dist <= 9 && !showing) {
+        } else if (x_dist <= 10 && z_dist <= 10 && !showing) {
             rend.enabled = true;
             showing = true;
         }

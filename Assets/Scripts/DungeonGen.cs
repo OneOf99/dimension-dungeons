@@ -29,17 +29,20 @@ public class DungeonGen : MonoBehaviour
     public bool build;
     public int SIZE;
     public Tile[,] grid;
+    public Tile[,] ceiling;
 
     // Start is called before the first frame update
     void Start()
     {
         SIZE = 32;
         grid = new Tile[SIZE,SIZE];
+        ceiling = new Tile[SIZE,SIZE];
         build = true;
         // Generate a new dungeon
         generateDungeon();
         // Build the new dungeon
         buildDungeon();
+        buildCeiling();
 
     }
 
@@ -59,6 +62,7 @@ public class DungeonGen : MonoBehaviour
             generateDungeon();
             // Build the new dungeon
             buildDungeon();
+            buildCeiling();
             
             Debug.Log("built");
 
@@ -241,12 +245,12 @@ public class DungeonGen : MonoBehaviour
                             case 0: temp_texture = textures[0]; break;
                             case 1: temp_texture = textures[2]; break;
                         }
-                        height = -1f;
+                        height = -0.96f;
                         break;
                     case 1:
                         switch(grid[z,x].var) {
-                            case 0: temp_texture = textures[1]; height = Random.Range(-0.45f,-0.1f); break;
-                            case 1: temp_texture = textures[3]; height = -1.05f; break;
+                            case 0: temp_texture = textures[1]; height = 0f; break;
+                            case 1: temp_texture = textures[3]; height = -1f; break;
                         }
                         break;
                 }
@@ -259,10 +263,31 @@ public class DungeonGen : MonoBehaviour
         }
     }
 
+    void buildCeiling() {
+        // Build the ceiling
+        for (int z=0; z<SIZE; z++) {
+            for (int x=0; x<SIZE; x++) {
+                //grid[z,x].type = Random.Range(0,2);
+                
+                Texture temp_texture = textures[1];
+                float height = 1f;
+
+                GameObject new_obj = Instantiate(cube,new Vector3(x,height,z), Quaternion.Euler(0,0,0));
+                new_obj.GetComponent<CubeLogic>().CAM = CAM;
+                Renderer rend = new_obj.GetComponent<MeshRenderer> ();
+                rend.material.SetTexture("_MainTex",temp_texture);
+                ceiling[z,x].obj = new_obj;
+            }
+        }
+    }
+
     void deleteDungeon() {
         for (int z=0; z<SIZE; z++) {
             for (int x=0; x<SIZE; x++) {
                 Destroy(grid[z,x].obj);
+                Destroy(ceiling[z,x].obj);
+                grid[z,x].type = 1;
+                grid[z,x].var = 0;
                 grid[z,x].type = 1;
                 grid[z,x].var = 0;
             }
